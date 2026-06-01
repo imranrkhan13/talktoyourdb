@@ -1,4 +1,4 @@
-# AI SQL Query Builder
+# Talktoyourdb
 
 A production-ready web application that converts natural language into SQL queries, executes them safely against a PostgreSQL database, and returns formatted results — all with AI-powered auto-correction and query explanation.
 
