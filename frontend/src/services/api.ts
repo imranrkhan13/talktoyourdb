@@ -8,9 +8,11 @@ import type {
 } from '../types';
 
 const api = axios.create({
-  baseURL: '/api',
-  timeout: 60_000,
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  timeout: 60000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // ── Interceptors ───────────────────────────────────────────────────────────────
