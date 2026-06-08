@@ -6,7 +6,10 @@ Production-ready application with security, logging, and clean architecture.
 import logging
 import time
 from contextlib import asynccontextmanager
+from app.services.history_service import history_service
 
+
+from backend.app.services import history_service
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -26,6 +29,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("Starting AI SQL Query Builder...")
     await db_service.connect()
+    await history_service.ensure_table()
     yield
     logger.info("Shutting down...")
     await db_service.disconnect()
