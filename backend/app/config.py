@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     MAX_INPUT_LENGTH: int = 2000
 
     # ── Allowed origins (CORS) ─────────────────────────────────────────────────
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173", "https://talktoyourdb.vercel.app"]
 
     class Config:
         env_file = ".env"
