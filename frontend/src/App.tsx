@@ -5,7 +5,7 @@ import QueryPanel from './components/QueryPanel';
 import HistoryPanel from './components/HistoryPanel';
 import SchemaPanel from './components/SchemaPanel';
 import Sidebar from './components/Sidebar';
-import LandingPage from './components/LandingPage';
+import LandingPage from './components/Landingpage';
 import type { AppView } from './types';
 
 export default function App() {
