@@ -1,9 +1,17 @@
 // LandingPage.tsx — Harmoniq-style light landing with real photo background
 import { useEffect, useState } from 'react';
+import BG_IMAGE from '../components/fella.png';
 interface Props {
     onEnter: () => void;
 }
-const BG_IMAGE = '/fella.png';
+<div
+    style={{
+        backgroundImage: `url(${BG_IMAGE})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh',
+    }}
+></div>
 const TYPED_QUERIES = [
     'Show top 5 users by total order value',
     'Which products are low on stock?',
@@ -42,7 +50,9 @@ export default function LandingPage({ onEnter }: Props) {
     };
 
     return (
+        
         <div className={`lp-root ${mounted ? 'lp-mounted' : ''} ${exiting ? 'lp-exiting' : ''}`}>
+            
 
             {/* ── Nav ── */}
             <nav className="lp-nav">
