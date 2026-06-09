@@ -1,10 +1,11 @@
+// App.tsx
 import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import QueryPanel from './components/QueryPanel';
 import HistoryPanel from './components/HistoryPanel';
 import SchemaPanel from './components/SchemaPanel';
 import Sidebar from './components/Sidebar';
-import LandingPage from './components/Landingpage';
+import LandingPage from './components/LandingPage';
 import type { AppView } from './types';
 
 export default function App() {
@@ -32,7 +33,7 @@ export default function App() {
       <Sidebar view={view} onViewChange={setView} />
       <main className="main-content">
         {view === 'query' && <QueryPanel />}
-        {view === 'history' && <HistoryPanel onReuse={(q) => { setView('query'); }} />}
+        {view === 'history' && <HistoryPanel onReuse={() => setView('query')} />}
         {view === 'schema' && <SchemaPanel />}
       </main>
     </div>
