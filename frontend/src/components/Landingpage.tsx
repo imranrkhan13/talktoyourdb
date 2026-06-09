@@ -1,17 +1,9 @@
 // LandingPage.tsx — Harmoniq-style light landing with real photo background
 import { useEffect, useState } from 'react';
-import BG_IMAGE from '../components/fella.png';
 interface Props {
     onEnter: () => void;
 }
-<div
-    style={{
-        backgroundImage: `url(${BG_IMAGE})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '100vh',
-    }}
-></div>
+const BG_IMAGE = '../components/fella.png';
 const TYPED_QUERIES = [
     'Show top 5 users by total order value',
     'Which products are low on stock?',
