@@ -4,13 +4,19 @@ import QueryPanel from './components/QueryPanel';
 import HistoryPanel from './components/HistoryPanel';
 import SchemaPanel from './components/SchemaPanel';
 import Sidebar from './components/Sidebar';
+import LandingPage from './components/Landingpage';
 import type { AppView } from './types';
 
 export default function App() {
   const [view, setView] = useState<AppView>('query');
+  const [showLanding, setShowLanding] = useState(true);
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
 
   return (
-    <div className="app-root">
+    <div className="app-root app-enter">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -25,9 +31,9 @@ export default function App() {
       />
       <Sidebar view={view} onViewChange={setView} />
       <main className="main-content">
-        {view === 'query'   && <QueryPanel />}
+        {view === 'query' && <QueryPanel />}
         {view === 'history' && <HistoryPanel onReuse={(q) => { setView('query'); }} />}
-        {view === 'schema'  && <SchemaPanel />}
+        {view === 'schema' && <SchemaPanel />}
       </main>
     </div>
   );
