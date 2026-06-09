@@ -1,3 +1,4 @@
+// SqlPreview.tsx — syntax highlighted SQL block (dark block inside light UI)
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import sql from 'react-syntax-highlighter/dist/esm/languages/hljs/sql';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -8,13 +9,12 @@ interface Props {
   sql: string;
 }
 
-// Customise the theme to match our dark surface
 const theme = {
   ...atomOneDark,
   hljs: {
     ...atomOneDark.hljs,
-    background: 'var(--surface-3)',
-    color: 'var(--text-primary)',
+    background: '#1e2433',
+    color: '#e8eaf0',
   },
 };
 
@@ -31,7 +31,7 @@ export default function SqlPreview({ sql: query }: Props) {
           fontSize: '13px',
           lineHeight: '1.7',
           overflowX: 'auto',
-          background: 'var(--surface-3)',
+          background: '#1e2433',
         }}
         wrapLongLines={false}
       >

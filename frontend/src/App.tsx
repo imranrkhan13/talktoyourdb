@@ -5,7 +5,7 @@ import QueryPanel from './components/QueryPanel';
 import HistoryPanel from './components/HistoryPanel';
 import SchemaPanel from './components/SchemaPanel';
 import Sidebar from './components/Sidebar';
-import LandingPage from './components/Landingpage';
+import LandingPage from './components/LandingPage';
 import type { AppView } from './types';
 
 export default function App() {
@@ -22,11 +22,12 @@ export default function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: 'var(--surface-2)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border)',
-            fontFamily: 'var(--font-mono)',
+            background: '#ffffff',
+            color: '#0f1117',
+            border: '1px solid #e0e4ec',
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: '13px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
           },
         }}
       />

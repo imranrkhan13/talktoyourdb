@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 interface Props {
     onEnter: () => void;
 }
-const BG_IMAGE = '../components/fella.png';
+const BG_IMAGE = '/fella.png';
 const TYPED_QUERIES = [
     'Show top 5 users by total order value',
     'Which products are low on stock?',
@@ -42,9 +42,9 @@ export default function LandingPage({ onEnter }: Props) {
     };
 
     return (
-        
+
         <div className={`lp-root ${mounted ? 'lp-mounted' : ''} ${exiting ? 'lp-exiting' : ''}`}>
-            
+
 
             {/* ── Nav ── */}
             <nav className="lp-nav">
