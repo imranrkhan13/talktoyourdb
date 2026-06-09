@@ -17,7 +17,7 @@ export default function Sidebar({ view, onViewChange }: Props) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <LayoutGrid size={18} className="logo-icon" />
+        <LayoutGrid size={17} className="logo-icon" />
         <span className="logo-text">TalkTo<span className="logo-accent">YourDB</span></span>
       </div>
       <nav className="sidebar-nav">
@@ -27,7 +27,7 @@ export default function Sidebar({ view, onViewChange }: Props) {
             className={`nav-item ${view === id ? 'active' : ''}`}
             onClick={() => onViewChange(id)}
           >
-            <Icon size={16} />
+            <Icon size={15} />
             <span>{label}</span>
           </button>
         ))}

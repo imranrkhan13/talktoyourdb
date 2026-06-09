@@ -1,11 +1,12 @@
 // LandingPage.tsx
 import { useEffect, useState } from 'react';
+import {
+    Database, Zap, ShieldCheck, Clock, ArrowRight, Play
+} from 'lucide-react';
 
 interface Props {
     onEnter: () => void;
 }
-
-const BG_IMAGE = '/fella.png';
 
 const TYPED_QUERIES = [
     'Show top 5 customers by revenue last month',
@@ -35,28 +36,26 @@ export default function LandingPage({ onEnter }: Props) {
             t = setTimeout(() => setTypedText(current.slice(0, typedText.length - 1)), 24);
         } else {
             setIsDeleting(false);
-            setTypedIndex((i) => (i + 1) % TYPED_QUERIES.length);
+            setTypedIndex(i => (i + 1) % TYPED_QUERIES.length);
         }
         return () => clearTimeout(t);
     }, [typedText, isDeleting, typedIndex]);
 
     const handleEnter = () => {
         setExiting(true);
-        setTimeout(onEnter, 580);
+        setTimeout(onEnter, 520);
     };
 
     return (
         <div className={`lp-root ${mounted ? 'lp-mounted' : ''} ${exiting ? 'lp-exiting' : ''}`}>
 
+            {/* Full-bleed background photo */}
+            <div className="lp-bg" />
+
             {/* Nav */}
             <nav className="lp-nav">
                 <div className="lp-logo">
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                        <rect x="1" y="1" width="8" height="8" rx="2" fill="#111" opacity="0.85" />
-                        <rect x="11" y="1" width="8" height="8" rx="2" fill="#111" opacity="0.4" />
-                        <rect x="1" y="11" width="8" height="8" rx="2" fill="#111" opacity="0.4" />
-                        <rect x="11" y="11" width="8" height="8" rx="2" fill="#111" opacity="0.85" />
-                    </svg>
+                    <Database size={18} strokeWidth={2} />
                     <span className="lp-logo-text">TalkTo<span className="lp-logo-accent">YourDB</span></span>
                 </div>
                 <div className="lp-nav-links">
@@ -64,13 +63,16 @@ export default function LandingPage({ onEnter }: Props) {
                     <span>Security</span>
                     <span>GitHub</span>
                 </div>
-                <button className="lp-nav-cta" onClick={handleEnter}>Open App →</button>
+                <button className="lp-nav-cta" onClick={handleEnter}>
+                    Open App <ArrowRight size={14} strokeWidth={2.5} />
+                </button>
             </nav>
 
-            {/* Hero */}
+            {/* Hero — sits on top of photo */}
             <div className="lp-hero">
                 <div className="lp-badge">
-                    <span className="lp-badge-dot" /> GPT-4o · PostgreSQL · Multi-layer validation
+                    <span className="lp-badge-dot" />
+                    GPT-4o · PostgreSQL · Multi-layer validation
                 </div>
 
                 <h1 className="lp-headline">
@@ -84,9 +86,10 @@ export default function LandingPage({ onEnter }: Props) {
                     results with AI-generated explanations — instantly.
                 </p>
 
-                {/* Typewriter */}
                 <div className="lp-typewriter">
-                    <span className="lp-tw-prompt">›</span>
+                    <span className="lp-tw-prompt">
+                        <ArrowRight size={13} strokeWidth={2.5} />
+                    </span>
                     <span className="lp-tw-text">{typedText}</span>
                     <span className="lp-tw-cursor" />
                 </div>
@@ -95,19 +98,30 @@ export default function LandingPage({ onEnter }: Props) {
                     <button className="lp-btn-primary" onClick={handleEnter}>
                         Try it now
                     </button>
-                    <div className="lp-trust-pills">
-                        <span className="lp-pill">🔒 Read-only transactions</span>
-                        <span className="lp-pill">⚡ Auto-repair AI</span>
-                        <span className="lp-pill">🛡 Injection detection</span>
-                    </div>
+                    <button className="lp-btn-ghost">
+                        <Play size={13} strokeWidth={2.5} />
+                        Watch demo
+                    </button>
+                </div>
+
+                <div className="lp-trust-pills">
+                    <span className="lp-pill">
+                        <ShieldCheck size={12} strokeWidth={2} />
+                        Read-only transactions
+                    </span>
+                    <span className="lp-pill">
+                        <Zap size={12} strokeWidth={2} />
+                        Auto-repair AI
+                    </span>
+                    <span className="lp-pill">
+                        <ShieldCheck size={12} strokeWidth={2} />
+                        Injection detection
+                    </span>
                 </div>
             </div>
 
-            {/* Photo + floating window */}
-            <div className="lp-photo-bg" style={{ backgroundImage: `url(${BG_IMAGE})` }}>
-                <div className="lp-photo-fade-top" />
-                <div className="lp-photo-fade-bottom" />
-
+            {/* Floating window — pinned to bottom */}
+            <div className="lp-window-wrap">
                 <div className="lp-window">
                     <div className="lp-window-bar">
                         <span className="lp-dot red" />
@@ -118,50 +132,34 @@ export default function LandingPage({ onEnter }: Props) {
                             <span className="lp-wtab">History</span>
                             <span className="lp-wtab">Schema</span>
                         </div>
-                        <div className="lp-window-search">TalkToYourDB <kbd>⌘K</kbd></div>
+                        <div className="lp-window-search">
+                            TalkToYourDB <kbd>⌘K</kbd>
+                        </div>
                     </div>
                     <div className="lp-window-body">
                         <div className="lp-w-sidebar">
-                            <div className="lp-w-sitem active">⚡ Query</div>
-                            <div className="lp-w-sitem">🕐 History</div>
-                            <div className="lp-w-sitem">🗄 Schema</div>
+                            <div className="lp-w-sitem active">
+                                <Zap size={12} /> Query
+                            </div>
+                            <div className="lp-w-sitem">
+                                <Clock size={12} /> History
+                            </div>
+                            <div className="lp-w-sitem">
+                                <Database size={12} /> Schema
+                            </div>
                         </div>
                         <div className="lp-w-main">
                             <div className="lp-w-inputbox">
-                                <span className="lp-w-placeholder">Show top 5 customers by revenue last month</span>
+                                Show top 5 customers by revenue last month
                             </div>
                             <div className="lp-w-sql">
-                                <div className="lp-w-sql-line">
-                                    <span className="sql-kw">SELECT</span>
-                                    <span className="sql-id"> users.name</span>,
-                                    <span className="sql-fn"> SUM</span>(orders.total) <span className="sql-kw">AS</span> <span className="sql-id">revenue</span>
-                                </div>
-                                <div className="lp-w-sql-line">
-                                    <span className="sql-kw">FROM</span>
-                                    <span className="sql-id"> orders </span>
-                                    <span className="sql-kw">JOIN</span>
-                                    <span className="sql-id"> users </span>
-                                    <span className="sql-kw">ON</span>
-                                    <span className="sql-id"> users.id </span>= orders.user_id
-                                </div>
-                                <div className="lp-w-sql-line">
-                                    <span className="sql-kw">WHERE</span>
-                                    <span className="sql-plain"> orders.created_at &gt;= </span>
-                                    <span className="sql-fn">DATE_TRUNC</span>(<span className="sql-str">'month'</span>, <span className="sql-fn">NOW</span>())
-                                </div>
-                                <div className="lp-w-sql-line">
-                                    <span className="sql-kw">GROUP BY</span>
-                                    <span className="sql-id"> users.name </span>
-                                    <span className="sql-kw">ORDER BY</span>
-                                    <span className="sql-id"> revenue </span>
-                                    <span className="sql-kw">DESC LIMIT</span>
-                                    <span className="sql-num"> 5</span>
-                                </div>
+                                <div className="lp-sql-line"><span className="sk">SELECT</span><span className="si"> users.name</span>, <span className="sf">SUM</span>(orders.total) <span className="sk">AS</span><span className="si"> revenue</span></div>
+                                <div className="lp-sql-line"><span className="sk">FROM</span><span className="si"> orders </span><span className="sk">JOIN</span><span className="si"> users </span><span className="sk">ON</span><span className="si"> users.id</span> = orders.user_id</div>
+                                <div className="lp-sql-line"><span className="sk">WHERE</span> orders.created_at &gt;= <span className="sf">DATE_TRUNC</span>(<span className="ss">'month'</span>, <span className="sf">NOW</span>())</div>
+                                <div className="lp-sql-line"><span className="sk">GROUP BY</span><span className="si"> users.name </span><span className="sk">ORDER BY</span><span className="si"> revenue </span><span className="sk">DESC LIMIT</span><span className="sn"> 5</span></div>
                             </div>
                             <div className="lp-w-table">
-                                <div className="lp-w-thead">
-                                    <span>name</span><span>revenue</span><span>orders</span>
-                                </div>
+                                <div className="lp-w-thead"><span>name</span><span>revenue</span><span>orders</span></div>
                                 <div className="lp-w-trow"><span>Alice Chen</span><span>$48,290</span><span>142</span></div>
                                 <div className="lp-w-trow"><span>Bob Kumar</span><span>$41,150</span><span>118</span></div>
                                 <div className="lp-w-trow"><span>Sara Lin</span><span>$38,840</span><span>97</span></div>

@@ -5,9 +5,7 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 SyntaxHighlighter.registerLanguage('sql', sql);
 
-interface Props {
-  sql: string;
-}
+interface Props { sql: string; }
 
 const theme = {
   ...atomOneDark,
@@ -22,8 +20,8 @@ export default function SqlPreview({ sql: query }: Props) {
         style={theme}
         customStyle={{
           margin: 0,
-          padding: '1rem 1.25rem',
-          borderRadius: '0 0 8px 8px',
+          padding: '1rem 1.2rem',
+          borderRadius: '0 0 7px 7px',
           fontSize: '13px',
           lineHeight: '1.7',
           overflowX: 'auto',
