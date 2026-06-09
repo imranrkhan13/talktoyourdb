@@ -1,4 +1,5 @@
-import { Database, History, LayoutGrid, Terminal } from 'lucide-react';
+// Sidebar.tsx
+import { Database, History, Terminal, LayoutGrid } from 'lucide-react';
 import type { AppView } from '../types';
 
 interface Props {
@@ -7,17 +8,17 @@ interface Props {
 }
 
 const NAV = [
-  { id: 'query'   as AppView, Icon: Terminal,   label: 'Query' },
-  { id: 'history' as AppView, Icon: History,    label: 'History' },
-  { id: 'schema'  as AppView, Icon: Database,   label: 'Schema' },
+  { id: 'query' as AppView, Icon: Terminal, label: 'Query' },
+  { id: 'history' as AppView, Icon: History, label: 'History' },
+  { id: 'schema' as AppView, Icon: Database, label: 'Schema' },
 ];
 
 export default function Sidebar({ view, onViewChange }: Props) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <LayoutGrid size={20} className="logo-icon" />
-        <span className="logo-text">SQL<span className="logo-accent">AI</span></span>
+        <LayoutGrid size={18} className="logo-icon" />
+        <span className="logo-text">TalkTo<span className="logo-accent">YourDB</span></span>
       </div>
       <nav className="sidebar-nav">
         {NAV.map(({ id, Icon, label }) => (
@@ -26,7 +27,7 @@ export default function Sidebar({ view, onViewChange }: Props) {
             className={`nav-item ${view === id ? 'active' : ''}`}
             onClick={() => onViewChange(id)}
           >
-            <Icon size={18} />
+            <Icon size={16} />
             <span>{label}</span>
           </button>
         ))}
