@@ -12,9 +12,7 @@ export default function App() {
   const [view, setView] = useState<AppView>('query');
   const [showLanding, setShowLanding] = useState(true);
 
-  if (showLanding) {
-    return <LandingPage onEnter={() => setShowLanding(false)} />;
-  }
+  if (showLanding) return <LandingPage onEnter={() => setShowLanding(false)} />;
 
   return (
     <div className="app-root app-enter">
@@ -22,7 +20,7 @@ export default function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: '#ffffff',
+            background: '#fff',
             color: '#0f1117',
             border: '1px solid #e2e5ea',
             fontFamily: "'Inter', system-ui, sans-serif",
