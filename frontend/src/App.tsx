@@ -21,11 +21,12 @@ export default function App() {
         toastOptions={{
           style: {
             background: '#fff',
-            color: '#0f1117',
+            color: '#0a0c10',
             border: '1px solid #e2e5ea',
             fontFamily: "'Inter', system-ui, sans-serif",
             fontSize: '13px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.09)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+            borderRadius: '10px',
           },
         }}
       />

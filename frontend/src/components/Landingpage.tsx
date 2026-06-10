@@ -1,12 +1,10 @@
 // LandingPage.tsx
 import { useEffect, useState } from 'react';
-import { Database, Zap, ShieldCheck, ArrowRight, Play, Lock, RefreshCw, GitBranch } from 'lucide-react';
+import { Database, Zap, ShieldCheck, ArrowRight, Play, Lock, RefreshCw, GitBranch, Clock } from 'lucide-react';
 
-interface Props {
-    onEnter: () => void;
-}
+interface Props { onEnter: () => void; }
 
-const TYPED_QUERIES = [
+const QUERIES = [
     'Show top 5 customers by revenue last month',
     'Which products are low on stock?',
     'List users who placed more than 3 orders',
@@ -15,124 +13,86 @@ const TYPED_QUERIES = [
 ];
 
 const FEATURES = [
-    {
-        icon: <Database size={20} strokeWidth={1.75} />,
-        title: 'Schema-Aware Queries',
-        desc: 'Your full database schema is sent to GPT-4o before generation — no hallucinated tables, no broken joins.',
-    },
-    {
-        icon: <ShieldCheck size={20} strokeWidth={1.75} />,
-        title: 'Multi-Layer Validation',
-        desc: 'Every query passes injection detection, keyword blocking, and stacked-query analysis before execution.',
-    },
-    {
-        icon: <Lock size={20} strokeWidth={1.75} />,
-        title: 'Read-Only Transactions',
-        desc: 'All queries run inside isolated read-only transactions with timeout enforcement. Nothing can be mutated.',
-    },
-    {
-        icon: <RefreshCw size={20} strokeWidth={1.75} />,
-        title: 'Auto-Repair AI',
-        desc: 'If a query fails, the error is fed back to AI which generates a corrected query and retries automatically.',
-    },
-    {
-        icon: <Zap size={20} strokeWidth={1.75} />,
-        title: 'Instant Explanations',
-        desc: 'Every query comes with a human-readable explanation of what it does and why it was generated.',
-    },
-    {
-        icon: <GitBranch size={20} strokeWidth={1.75} />,
-        title: 'Query History',
-        desc: 'Every run is saved with execution time, row count, and status. Reuse or delete any past query.',
-    },
+    { icon: Database, title: 'Schema-Aware Queries', desc: 'Your full database schema is sent to GPT-4o before generation — no hallucinated tables, no broken joins, no wrong relationships.' },
+    { icon: ShieldCheck, title: 'Multi-Layer Validation', desc: 'Every query passes injection detection, keyword blocking, and stacked-query analysis before a single byte reaches your database.' },
+    { icon: Lock, title: 'Read-Only Transactions', desc: 'All queries run inside isolated read-only transactions with timeout enforcement. Nothing can be mutated or deleted — ever.' },
+    { icon: RefreshCw, title: 'Auto-Repair AI', desc: 'If a query fails, the error is fed back to GPT-4o which generates a corrected query and retries automatically.' },
+    { icon: Zap, title: 'Instant Explanations', desc: 'Every result comes with a plain-English explanation of what the query does and why it was generated that way.' },
+    { icon: Clock, title: 'Query History', desc: 'Every run is saved with execution time, row count, and status. Reuse, inspect, or delete any past query in one click.' },
 ];
 
 export default function LandingPage({ onEnter }: Props) {
-    const [typedIndex, setTypedIndex] = useState(0);
-    const [typedText, setTypedText] = useState('');
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [idx, setIdx] = useState(0);
+    const [text, setText] = useState('');
+    const [del, setDel] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [exiting, setExiting] = useState(false);
 
-    useEffect(() => { setTimeout(() => setMounted(true), 50); }, []);
+    useEffect(() => { setTimeout(() => setMounted(true), 40); }, []);
 
     useEffect(() => {
-        const current = TYPED_QUERIES[typedIndex];
+        const cur = QUERIES[idx];
         let t: ReturnType<typeof setTimeout>;
-        if (!isDeleting && typedText.length < current.length) {
-            t = setTimeout(() => setTypedText(current.slice(0, typedText.length + 1)), 48);
-        } else if (!isDeleting && typedText.length === current.length) {
-            t = setTimeout(() => setIsDeleting(true), 2200);
-        } else if (isDeleting && typedText.length > 0) {
-            t = setTimeout(() => setTypedText(current.slice(0, typedText.length - 1)), 24);
-        } else {
-            setIsDeleting(false);
-            setTypedIndex(i => (i + 1) % TYPED_QUERIES.length);
-        }
+        if (!del && text.length < cur.length) t = setTimeout(() => setText(cur.slice(0, text.length + 1)), 46);
+        else if (!del && text.length === cur.length) t = setTimeout(() => setDel(true), 2400);
+        else if (del && text.length > 0) t = setTimeout(() => setText(cur.slice(0, text.length - 1)), 22);
+        else { setDel(false); setIdx(i => (i + 1) % QUERIES.length); }
         return () => clearTimeout(t);
-    }, [typedText, isDeleting, typedIndex]);
+    }, [text, del, idx]);
 
-    const handleEnter = () => {
-        setExiting(true);
-        setTimeout(onEnter, 520);
-    };
+    const go = () => { setExiting(true); setTimeout(onEnter, 500); };
 
     return (
         <div className={`lp-page ${mounted ? 'lp-mounted' : ''} ${exiting ? 'lp-exiting' : ''}`}>
 
-            {/* ── Sticky nav ── */}
+            {/* ── FIXED NAV ── */}
             <nav className="lp-nav">
                 <div className="lp-logo">
                     <Database size={17} strokeWidth={2} />
                     <span className="lp-logo-text">TalkTo<span className="lp-logo-accent">YourDB</span></span>
                 </div>
-                <div className="lp-nav-links">
-                    <span>Docs</span>
-                    <span>Security</span>
-                    <span>GitHub</span>
+                <div className="lp-nav-center">
+                    <span className="lp-nav-link">Docs</span>
+                    <span className="lp-nav-link">Security</span>
+                    <span className="lp-nav-link">GitHub</span>
                 </div>
-                <button className="lp-nav-cta" onClick={handleEnter}>
+                <button className="lp-nav-cta" onClick={go}>
                     Open App <ArrowRight size={13} strokeWidth={2.5} />
                 </button>
             </nav>
 
-            {/* ── Hero section — full viewport ── */}
-            <section className="lp-hero-section">
-                {/* Background photo with gradient overlays */}
-                <div className="lp-hero-bg" />
+            {/* ── HERO — full viewport height ── */}
+            <section className="lp-hero">
+                <div className="lp-hero-photo" />
 
-                {/* Hero content */}
-                <div className="lp-hero-content">
-                    <div className="lp-badge">
-                        <span className="lp-badge-dot" />
+                <div className="lp-hero-body">
+                    <div className="lp-eyebrow">
+                        <span className="lp-eyebrow-dot" />
                         GPT-4o · PostgreSQL · Multi-layer validation
                     </div>
 
-                    <h1 className="lp-headline">
+                    <h1 className="lp-h1">
                         Ask your database<br /><em>anything.</em>
                     </h1>
 
-                    <p className="lp-sub">
+                    <p className="lp-hero-sub">
                         TalkToYourDB converts plain English into schema-aware SQL, validates
                         it through multiple security layers, and returns results with
                         AI-generated explanations — instantly.
                     </p>
 
                     <div className="lp-typewriter">
-                        <span className="lp-tw-prompt">
-                            <ArrowRight size={12} strokeWidth={2.5} />
-                        </span>
-                        <span className="lp-tw-text">{typedText}</span>
+                        <span className="lp-tw-prompt"><ArrowRight size={12} strokeWidth={2.5} /></span>
+                        <span className="lp-tw-text">{text}</span>
                         <span className="lp-tw-cursor" />
                     </div>
 
                     <div className="lp-hero-btns">
-                        <button className="lp-btn-primary" onClick={handleEnter}>
+                        <button className="lp-btn-primary" onClick={go}>
                             Try it now
                         </button>
                         <button className="lp-btn-ghost">
-                            <Play size={13} strokeWidth={2} />
-                            Watch demo
+                            <Play size={13} strokeWidth={2} /> Watch demo
                         </button>
                     </div>
 
@@ -143,37 +103,37 @@ export default function LandingPage({ onEnter }: Props) {
                     </div>
                 </div>
 
-                {/* Floating window — bottom of hero */}
+                {/* Floating dark window pinned to bottom of hero */}
                 <div className="lp-window-wrap">
                     <div className="lp-window">
-                        <div className="lp-window-bar">
-                            <span className="lp-dot red" /><span className="lp-dot yellow" /><span className="lp-dot green" />
-                            <div className="lp-window-tabs">
-                                <span className="lp-wtab active">Query</span>
+                        <div className="lp-wbar">
+                            <span className="lp-dot r" /><span className="lp-dot y" /><span className="lp-dot g" />
+                            <div className="lp-wtabs">
+                                <span className="lp-wtab on">Query</span>
                                 <span className="lp-wtab">History</span>
                                 <span className="lp-wtab">Schema</span>
                             </div>
-                            <div className="lp-window-pill">TalkToYourDB <kbd>⌘K</kbd></div>
+                            <div className="lp-wpill">TalkToYourDB <kbd>⌘K</kbd></div>
                         </div>
-                        <div className="lp-window-body">
-                            <div className="lp-w-sidebar">
-                                <div className="lp-w-item active"><Zap size={11} /> Query</div>
-                                <div className="lp-w-item"><Database size={11} /> History</div>
-                                <div className="lp-w-item"><GitBranch size={11} /> Schema</div>
+                        <div className="lp-wbody">
+                            <div className="lp-wsidebar">
+                                <div className="lp-witem on"><Zap size={11} /> Query</div>
+                                <div className="lp-witem"><Clock size={11} /> History</div>
+                                <div className="lp-witem"><Database size={11} /> Schema</div>
                             </div>
-                            <div className="lp-w-main">
-                                <div className="lp-w-input">Show top 5 customers by revenue last month</div>
-                                <div className="lp-w-sql">
+                            <div className="lp-wmain">
+                                <div className="lp-winput">Show top 5 customers by revenue last month</div>
+                                <div className="lp-wsql">
                                     <div className="lp-sql-line"><span className="sk">SELECT</span><span className="si"> users.name</span>, <span className="sf">SUM</span>(orders.total) <span className="sk">AS</span><span className="si"> revenue</span></div>
                                     <div className="lp-sql-line"><span className="sk">FROM</span><span className="si"> orders </span><span className="sk">JOIN</span><span className="si"> users </span><span className="sk">ON</span><span className="si"> users.id</span> = orders.user_id</div>
                                     <div className="lp-sql-line"><span className="sk">WHERE</span> orders.created_at &gt;= <span className="sf">DATE_TRUNC</span>(<span className="ss">'month'</span>, <span className="sf">NOW</span>())</div>
                                     <div className="lp-sql-line"><span className="sk">GROUP BY</span><span className="si"> users.name </span><span className="sk">ORDER BY</span><span className="si"> revenue </span><span className="sk">DESC LIMIT</span><span className="sn"> 5</span></div>
                                 </div>
-                                <div className="lp-w-table">
-                                    <div className="lp-w-thead"><span>name</span><span>revenue</span><span>orders</span></div>
-                                    <div className="lp-w-trow"><span>Alice Chen</span><span>$48,290</span><span>142</span></div>
-                                    <div className="lp-w-trow"><span>Bob Kumar</span><span>$41,150</span><span>118</span></div>
-                                    <div className="lp-w-trow"><span>Sara Lin</span><span>$38,840</span><span>97</span></div>
+                                <div className="lp-wtable">
+                                    <div className="lp-wthead"><span>name</span><span>revenue</span><span>orders</span></div>
+                                    <div className="lp-wtrow"><span>Alice Chen</span><span>$48,290</span><span>142</span></div>
+                                    <div className="lp-wtrow"><span>Bob Kumar</span><span>$41,150</span><span>118</span></div>
+                                    <div className="lp-wtrow"><span>Sara Lin</span><span>$38,840</span><span>97</span></div>
                                 </div>
                             </div>
                         </div>
@@ -181,37 +141,37 @@ export default function LandingPage({ onEnter }: Props) {
                 </div>
             </section>
 
-            {/* ── Features section ── */}
-            <section className="lp-features-section">
+            {/* ── FEATURES ── */}
+            <section className="lp-features">
                 <div className="lp-features-inner">
-                    <div className="lp-section-eyebrow">What's under the hood</div>
-                    <h2 className="lp-section-title">Built for production,<br />not just demos.</h2>
+                    <p className="lp-section-label">What's under the hood</p>
+                    <h2 className="lp-section-h2">Built for production,<br />not just demos.</h2>
                     <p className="lp-section-sub">
                         Unlike simple AI SQL generators, TalkToYourDB is designed with real-world
                         reliability, backend safety, and operational security in mind.
                     </p>
                     <div className="lp-features-grid">
-                        {FEATURES.map((f, i) => (
-                            <div className="lp-feature-card" key={i}>
-                                <div className="lp-feature-icon">{f.icon}</div>
-                                <h3 className="lp-feature-title">{f.title}</h3>
-                                <p className="lp-feature-desc">{f.desc}</p>
+                        {FEATURES.map(({ icon: Icon, title, desc }) => (
+                            <div className="lp-fcard" key={title}>
+                                <div className="lp-fcard-icon"><Icon size={20} strokeWidth={1.75} /></div>
+                                <h3 className="lp-fcard-title">{title}</h3>
+                                <p className="lp-fcard-desc">{desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── CTA section ── */}
-            <section className="lp-cta-section">
-                <h2 className="lp-cta-title">Your database, finally<br /><em>conversational.</em></h2>
+            {/* ── CTA ── */}
+            <section className="lp-cta">
+                <h2 className="lp-cta-h2">Your database, finally<br /><em>conversational.</em></h2>
                 <p className="lp-cta-sub">No SQL knowledge required. Just ask.</p>
-                <button className="lp-btn-primary lp-cta-btn" onClick={handleEnter}>
+                <button className="lp-btn-primary lp-cta-btn" onClick={go}>
                     Open Query Builder <ArrowRight size={15} strokeWidth={2} />
                 </button>
             </section>
 
-            {/* ── Footer ── */}
+            {/* ── FOOTER ── */}
             <footer className="lp-footer">
                 <span className="lp-footer-logo">TalkToYourDB</span>
                 <span className="lp-footer-copy">Built with FastAPI · PostgreSQL · GPT-4o</span>
