@@ -1352,10 +1352,13 @@ body {
   position: relative;
   min-height: 100vh;
   padding-top: 60px;
+  padding-bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
+  /* photo bg must be clipped to hero, but children can overflow */
+  isolation: isolate;
 }
 
 .lp-hero-img {
@@ -1365,6 +1368,8 @@ body {
   background: url('/fella.png') center 35% / cover no-repeat;
   transform: scale(1.04);
   animation: lp-zoom 18s ease-in-out infinite alternate;
+  border-radius: 0;
+  overflow: hidden;
 }
 
 @keyframes lp-zoom {
@@ -1383,10 +1388,11 @@ body {
   z-index: 1;
   background: linear-gradient(to bottom,
       rgba(249, 250, 251, .97) 0%,
-      rgba(249, 250, 251, .78) 20%,
-      rgba(249, 250, 251, .05) 50%,
-      rgba(5, 8, 20, .55) 73%,
-      rgba(5, 8, 20, .97) 100%);
+      rgba(249, 250, 251, .78) 18%,
+      rgba(249, 250, 251, .02) 46%,
+      rgba(5, 8, 20, .45) 65%,
+      rgba(5, 8, 20, .92) 82%,
+      rgba(5, 8, 20, .98) 100%);
 }
 
 /* hero content */
@@ -1676,18 +1682,22 @@ body {
 /* ─── WINDOW ─── */
 .lp-win-wrap {
   position: relative;
-  z-index: 10;
+  z-index: 20;
   width: 90%;
   max-width: 900px;
   margin-top: 2rem;
+  margin-bottom: 0;
   align-self: center;
+  /* ensure it renders above the gradient */
 }
 
 .lp-win {
   background: #141720;
   border: 1px solid rgba(255, 255, 255, .1);
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  border-bottom: none;
   border-radius: 14px 14px 0 0;
-  overflow: hidden;
+  overflow: visible;
   box-shadow:
     0 -30px 80px rgba(0, 0, 0, .55),
     0 0 0 1px rgba(255, 255, 255, .05),
@@ -1778,6 +1788,7 @@ body {
 
 .lp-win-body {
   display: flex;
+  min-height: 280px;
 }
 
 .lp-win-side {
@@ -1789,6 +1800,7 @@ body {
   flex-direction: column;
   gap: 1px;
   padding: .6rem .45rem;
+  min-height: 280px;
 }
 
 .lp-wi {
@@ -1926,8 +1938,20 @@ body {
 /* ─── HOW IT WORKS ─── */
 .lp-how {
   background: #fff;
-  padding: 7rem 2rem;
-  border-top: 1px solid #e8ecf0;
+  padding: 7rem 2rem 7rem;
+  border-top: none;
+  position: relative;
+  z-index: 5;
+}
+
+.lp-how::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e8ecf0;
 }
 
 @media(max-width:640px) {
@@ -2230,4 +2254,25 @@ body {
   font-size: 12px;
   color: #374151;
   font-family: var(--m);
+}
+
+/* Window bottom bar — makes it feel complete */
+.lp-win-bottom {
+  padding: .55rem 1rem;
+  background: #1c2030;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #3a4a5e;
+  font-family: var(--m);
+  flex-shrink: 0;
+}
+
+.lp-win-bottom-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
 }

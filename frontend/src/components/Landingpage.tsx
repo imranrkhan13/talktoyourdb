@@ -164,8 +164,15 @@ export default function LandingPage({ onEnter }: Props) {
                                     <div className="lp-wtr"><span>Alice Chen</span><span>$48,290</span><span>142</span></div>
                                     <div className="lp-wtr"><span>Bob Kumar</span><span>$41,150</span><span>118</span></div>
                                     <div className="lp-wtr"><span>Sara Lin</span><span>$38,840</span><span>97</span></div>
+                                    <div className="lp-wtr"><span>James Park</span><span>$31,220</span><span>84</span></div>
+                                    <div className="lp-wtr"><span>Priya Mehta</span><span>$28,910</span><span>76</span></div>
                                 </div>
                             </div>
+                        </div>
+                        {/* Bottom status bar */}
+                        <div className="lp-win-bottom">
+                            <span className="lp-win-bottom-dot" />
+                            3 rows · 12.4ms · Read-only transaction
                         </div>
                     </div>
                 </div>
