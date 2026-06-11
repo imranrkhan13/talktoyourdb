@@ -234,29 +234,6 @@ export default function LandingPage({ onEnter }: Props) {
                 </div>
             </section>
 
-            {/* ══ FAQ ══ */}
-            <section className="lp-faq">
-                <div className="lp-container lp-faq-inner">
-                    <div data-reveal>
-                        <div className="lp-section-label">FAQ</div>
-                        <h2 className="lp-section-h2" style={{ textAlign: 'left' }}>
-                            Honest answers<br />to real questions.
-                        </h2>
-                    </div>
-                    <div className="lp-faq-list" data-reveal>
-                        {FAQS.map(({ q, a }, i) => (
-                            <div className={`lp-faq-item ${openFaq === i ? 'open' : ''}`} key={i}>
-                                <button className="lp-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                                    {q}
-                                    <span className="lp-faq-icon">{openFaq === i ? <Minus size={15} /> : <Plus size={15} />}</span>
-                                </button>
-                                {openFaq === i && <div className="lp-faq-a">{a}</div>}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* ══ FINAL CTA ══ */}
             <section className="lp-final">
                 <div className="lp-final-bg" />
