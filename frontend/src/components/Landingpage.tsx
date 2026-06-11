@@ -1,6 +1,6 @@
-// LandingPage.tsx — light, minimal, clean
+// LandingPage.tsx — Premium, minimal, monochrome
 import { useEffect, useState, useRef } from 'react';
-import { Database, Zap, ShieldCheck, ArrowRight, Lock, RefreshCw, Clock, ChevronDown } from 'lucide-react';
+import { Database, Zap, ShieldCheck, ArrowRight, Lock, RefreshCw, Clock, ChevronDown, Terminal } from 'lucide-react';
 
 interface Props { onEnter: () => void; }
 
@@ -12,12 +12,12 @@ const QUERIES = [
 ];
 
 const FEATURES = [
-    { icon: Database, title: 'Schema-Aware Queries', desc: 'Full DB schema sent to GPT-4o before every query. Zero hallucinated tables or broken joins.' },
-    { icon: ShieldCheck, title: 'Multi-Layer Validation', desc: 'Injection detection, keyword blocking, and stacked-query analysis on every request.' },
-    { icon: Lock, title: 'Read-Only Always', desc: 'Isolated read-only transactions with timeout enforcement. Nothing ever mutates.' },
-    { icon: RefreshCw, title: 'Auto-Repair AI', desc: 'Query fails? Error feeds back to GPT-4o, corrected and retried automatically.' },
-    { icon: Zap, title: 'Instant Explanations', desc: 'SQL generated, validated, executed and explained in plain English, instantly.' },
-    { icon: Clock, title: 'Full Query History', desc: 'Every run saved with timing, row count, and status. Reuse in one click.' },
+    { icon: Database, title: 'Schema-Aware Context', desc: 'Injects complete relation graphs and constraints into the context window before execution. Zero hallucinated attributes.' },
+    { icon: ShieldCheck, title: 'Multi-Layer Guardrails', desc: 'Strict AST parsing detects injections, blocks destructive keywords, and analyzes stacked statements before execution.' },
+    { icon: Lock, title: 'Enforced Read-Only', desc: 'Executes within isolated, read-only transactions with tight execution timeouts. Mutation is architecturally impossible.' },
+    { icon: RefreshCw, title: 'Self-Healing Engine', desc: 'If a database engine returns an error, the trace is instantly fed back into the pipeline for automated query repair.' },
+    { icon: Zap, title: 'Deterministic Output', desc: 'Compiles natural language to precise SQL, validates syntax, executes, and explains execution plans in under a second.' },
+    { icon: Clock, title: 'Historical Audit Trace', desc: 'Persists execution traces, performance metrics, and row counts. One-click execution from history.' },
 ];
 
 export default function LandingPage({ onEnter }: Props) {
@@ -25,180 +25,188 @@ export default function LandingPage({ onEnter }: Props) {
     const [txt, setTxt] = useState('');
     const [del, setDel] = useState(false);
     const [visible, setVisible] = useState(false);
-    const [out, setOut] = useState(false);
+    const [out, setOut] = useState(true); // Control exit state smoothly
 
-    useEffect(() => { setTimeout(() => setVisible(true), 80); }, []);
+    useEffect(() => { setVisible(true); }, []);
 
     useEffect(() => {
-        const q = QUERIES[qi];
-        let t: ReturnType<typeof setTimeout>;
-        if (!del && txt.length < q.length) t = setTimeout(() => setTxt(q.slice(0, txt.length + 1)), 44);
-        else if (!del && txt.length === q.length) t = setTimeout(() => setDel(true), 2600);
-        else if (del && txt.length > 0) t = setTimeout(() => setTxt(q.slice(0, txt.length - 1)), 20);
-        else { setDel(false); setQi(i => (i + 1) % QUERIES.length); }
-        return () => clearTimeout(t);
+        const currentQuery = QUERIES[qi];
+        let timer: ReturnType<typeof setTimeout>;
+
+        if (!del && txt.length < currentQuery.length) {
+            timer = setTimeout(() => setTxt(currentQuery.slice(0, txt.length + 1)), 40);
+        } else if (!del && txt.length === currentQuery.length) {
+            timer = setTimeout(() => setDel(true), 2500);
+        } else if (del && txt.length > 0) {
+            timer = setTimeout(() => setTxt(currentQuery.slice(0, txt.length - 1)), 15);
+        } else {
+            setDel(false);
+            setQi(prev => (prev + 1) % QUERIES.length);
+        }
+        return () => clearTimeout(timer);
     }, [txt, del, qi]);
 
-    const go = () => { setOut(true); setTimeout(onEnter, 500); };
-    const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    const handleEnter = () => {
+        setVisible(false);
+        setTimeout(onEnter, 400);
+    };
+
+    const scrollTo = (id: string) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
-        <div className={`lp ${visible ? 'lp-in' : ''} ${out ? 'lp-out' : ''}`}>
+        <div className={`lp-wrapper ${visible ? 'is-visible' : 'is-hidden'}`}>
 
-            {/* NAV */}
+            {/* Global Grid Overlay for Architectural Vibe */}
+            <div className="lp-grid-overlay" />
+
+            {/* Navigation Header */}
             <nav className="lp-nav">
-                <div className="lp-brand">
-                    <div className="lp-brand-mark"><Database size={14} strokeWidth={2.2} /></div>
-                    <span className="lp-brand-name">TalkTo<strong>YourDB</strong></span>
+                <div className="lp-nav-container">
+                    <div className="lp-brand">
+                        <div className="lp-logo-mark">
+                            <Database size={14} strokeWidth={2.5} />
+                        </div>
+                        <span className="lp-logo-text">TalkTo<span className="weight-medium">YourDB</span></span>
+                    </div>
+                    <div className="lp-nav-actions">
+                        <button className="lp-nav-link" onClick={() => scrollTo('demo')}>Demo</button>
+                        <button className="lp-nav-link" onClick={() => scrollTo('features')}>Features</button>
+                        <button className="lp-btn-action" onClick={handleEnter}>
+                            Launch Console
+                            <ArrowRight size={13} strokeWidth={2.5} />
+                        </button>
+                    </div>
                 </div>
-                <div className="lp-nav-links">
-                    <a href="#demo">Demo</a>
-                    <a href="#features">Features</a>
-                    <a href="#">GitHub</a>
-                </div>
-                <button className="lp-nav-btn" onClick={go}>
-                    Open App <ArrowRight size={13} strokeWidth={2.5} />
-                </button>
             </nav>
 
-            {/* HERO */}
+            {/* Hero Section */}
             <section className="lp-hero">
-                <div className="lp-hero-bg" />
-                <div className="lp-hero-overlay" />
+                <div className="lp-hero-content">
+                    <div className="lp-badge">
+                        <span className="lp-badge-dot" />
+                        LLM-Compiler · Native PostgreSQL · Production Safe
+                    </div>
 
-                <div className="lp-hero-body">
-                    <span className="lp-eyebrow-pill">
-                        <span className="lp-pill-dot" />
-                        GPT-4o · PostgreSQL · Zero SQL required
-                    </span>
-
-                    <h1 className="lp-hero-h1">
-                        Ask your database<br /><em>anything.</em>
+                    <h1 className="lp-title">
+                        Ask your database<br />
+                        <span className="text-muted font-serif">anything.</span>
                     </h1>
 
-                    <p className="lp-hero-p">
-                        Plain English in. Schema-aware SQL, safe execution,
-                        and AI explanations out — in under a second.
+                    <p className="lp-subtitle">
+                        Compile natural language statements into schema-aware, high-performance SQL.
+                        Validated, executed, and explained in plain English natively within 100ms.
                     </p>
 
-                    <div className="lp-tw">
-                        <span className="lp-tw-icon"><ArrowRight size={12} strokeWidth={2.5} /></span>
-                        <span className="lp-tw-text">{txt}</span>
-                        <span className="lp-tw-cur" />
+                    {/* Interactive Typewriter Prompt Area */}
+                    <div className="lp-terminal-prompt">
+                        <Terminal size={14} className="text-muted" />
+                        <span className="lp-prompt-text">{txt}</span>
+                        <span className="lp-cursor" />
                     </div>
 
-                    <div className="lp-hero-btns">
-                        <button className="lp-btn-primary" onClick={go}>
-                            Try it free <ArrowRight size={14} strokeWidth={2.2} />
+                    <div className="lp-cta-group">
+                        <button className="lp-btn-primary" onClick={handleEnter}>
+                            Initialize Sandbox
+                            <ArrowRight size={14} strokeWidth={2.5} />
                         </button>
-                        <button className="lp-btn-outline" onClick={() => scrollTo('demo')}>
-                            Watch demo
+                        <button className="lp-btn-secondary" onClick={() => scrollTo('demo')}>
+                            Review Architecture
                         </button>
                     </div>
 
-                    <div className="lp-hero-meta">
-                        <span><Lock size={11} /> Read-only</span>
-                        <span><ShieldCheck size={11} /> Injection-safe</span>
-                        <span><Zap size={11} /> Auto-repair</span>
+                    <div className="lp-compliance-row">
+                        <span className="compliance-item"><Lock size={12} /> Isolated Read-Only</span>
+                        <span className="compliance-item"><ShieldCheck size={12} /> AST Injection Guard</span>
+                        <span className="compliance-item"><Zap size={12} /> Auto-Healing</span>
                     </div>
                 </div>
 
-                {/* App window — fully visible, bleeds into next section */}
-                <div className="lp-win-outer">
-                    <div className="lp-win">
-                        <div className="lp-win-titlebar">
-                            <span className="lp-dot-r" /><span className="lp-dot-y" /><span className="lp-dot-g" />
-                            <div className="lp-win-tabs">
-                                <span className="lp-tab on">Query</span>
-                                <span className="lp-tab">History</span>
-                                <span className="lp-tab">Schema</span>
-                            </div>
-                            <span className="lp-win-pill">TalkToYourDB <kbd>⌘K</kbd></span>
-                        </div>
-                        <div className="lp-win-body">
-                            <div className="lp-win-sidebar">
-                                <span className="lp-sitem on"><Zap size={11} /> Query</span>
-                                <span className="lp-sitem"><Clock size={11} /> History</span>
-                                <span className="lp-sitem"><Database size={11} /> Schema</span>
-                            </div>
-                            <div className="lp-win-content">
-                                <div className="lp-win-input">Show top 5 customers by revenue last month</div>
-                                <div className="lp-win-sql">
-                                    <div className="lq"><span className="sk">SELECT</span><span className="si"> users.name</span>, <span className="sf">SUM</span>(orders.total) <span className="sk">AS</span><span className="si"> revenue</span></div>
-                                    <div className="lq"><span className="sk">FROM</span><span className="si"> orders </span><span className="sk">JOIN</span><span className="si"> users </span><span className="sk">ON</span><span className="si"> users.id</span> = orders.user_id</div>
-                                    <div className="lq"><span className="sk">WHERE</span> orders.created_at &gt;= <span className="sf">DATE_TRUNC</span>(<span className="ss">'month'</span>, <span className="sf">NOW</span>())</div>
-                                    <div className="lq"><span className="sk">GROUP BY</span><span className="si"> users.name </span><span className="sk">ORDER BY</span><span className="si"> revenue </span><span className="sk">DESC LIMIT</span><span className="sn"> 5</span></div>
-                                </div>
-                                <div className="lp-win-explain">Returns the top 5 customers ranked by total revenue in the current month.</div>
-                                <div className="lp-win-table">
-                                    <div className="lp-th"><span>name</span><span>revenue</span><span>orders</span></div>
-                                    <div className="lp-tr"><span>Alice Chen</span><span>$48,290</span><span>142</span></div>
-                                    <div className="lp-tr"><span>Bob Kumar</span><span>$41,150</span><span>118</span></div>
-                                    <div className="lp-tr"><span>Sara Lin</span><span>$38,840</span><span>97</span></div>
-                                    <div className="lp-tr"><span>James Park</span><span>$31,220</span><span>84</span></div>
-                                </div>
-                                <div className="lp-win-statusbar">
-                                    <span className="lp-status-dot" />
-                                    4 rows · 11.2ms · read-only transaction
-                                </div>
-                            </div>
-                        </div>
+                {/* Main Hero Asset Panel */}
+                <div className="lp-hero-viewport">
+                    <div className="viewport-inner">
+                        <img
+                            src="/fella.png"
+                            alt="Database Query Analyzer System Interface"
+                            className="lp-hero-image"
+                            loading="eager"
+                        />
                     </div>
                 </div>
 
-                <button className="lp-chevron" onClick={() => scrollTo('demo')}>
-                    <ChevronDown size={18} strokeWidth={1.5} />
+                <button className="lp-scroll-indicator" onClick={() => scrollTo('demo')} aria-label="Scroll details">
+                    <ChevronDown size={16} strokeWidth={2} />
                 </button>
             </section>
 
-            {/* VIDEO */}
-            <section className="lp-video-sec" id="demo">
-                <div className="lp-section-inner">
-                    <p className="lp-tag">See it in action</p>
-                    <h2 className="lp-h2">From question to results<br />in under a second.</h2>
-                    <div className="lp-video-wrap">
-                        <div className="lp-video-chrome">
-                            <div className="lp-vcbar">
-                                <span className="lp-vd r" /><span className="lp-vd y" /><span className="lp-vd g" />
-                                <span className="lp-vc-title">TalkToYourDB — AI Query Builder</span>
+            {/* Live Infrastructure / Demonstration Section */}
+            <section className="lp-section border-top" id="demo">
+                <div className="lp-section-header">
+                    <span className="section-tag">Telemetry & Run-Time Execution</span>
+                    <h2 className="section-title">From natural language to structured execution sets.</h2>
+                </div>
+
+                <div className="lp-video-container">
+                    <div className="video-window-frame">
+                        <div className="frame-header">
+                            <div className="frame-dots">
+                                <span className="dot" /><span className="dot" /><span className="dot" />
                             </div>
-                            <video className="lp-video" src="/aisql.mp4" autoPlay muted loop playsInline />
+                            <div className="frame-title">aisql.mov — Terminal Player</div>
+                        </div>
+                        <div className="frame-body">
+                            <video
+                                className="lp-video-player"
+                                src="/aisql.mov"
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                            />
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* FEATURES */}
-            <section className="lp-feat-sec" id="features">
-                <div className="lp-section-inner">
-                    <p className="lp-tag">Under the hood</p>
-                    <h2 className="lp-h2">Production-grade,<br />not a toy wrapper.</h2>
-                    <div className="lp-feat-grid">
-                        {FEATURES.map(({ icon: Icon, title, desc }) => (
-                            <div className="lp-feat" key={title}>
-                                <div className="lp-feat-ico"><Icon size={18} strokeWidth={1.75} /></div>
-                                <h3 className="lp-feat-title">{title}</h3>
-                                <p className="lp-feat-desc">{desc}</p>
+            {/* Core Architectural Features Grid */}
+            <section className="lp-section border-top" id="features">
+                <div className="lp-section-header">
+                    <span className="section-tag">Technical Specification</span>
+                    <h2 className="section-title">Engineered for security. Formulated for high availability.</h2>
+                </div>
+
+                <div className="lp-grid-features">
+                    {FEATURES.map(({ icon: Icon, title, desc }) => (
+                        <div className="lp-feature-card" key={title}>
+                            <div className="feature-icon-wrapper">
+                                <Icon size={16} strokeWidth={2} />
                             </div>
-                        ))}
-                    </div>
+                            <h3 className="feature-card-title">{title}</h3>
+                            <p className="feature-card-description">{desc}</p>
+                        </div>
+                    ))}
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="lp-cta-sec">
-                <div className="lp-section-inner lp-cta-inner">
-                    <h2 className="lp-cta-h2">Your database,<br />finally <em>conversational.</em></h2>
-                    <p className="lp-cta-p">No SQL knowledge needed. Just ask.</p>
-                    <button className="lp-btn-primary lp-cta-btn" onClick={go}>
-                        Open Query Builder <ArrowRight size={15} strokeWidth={2} />
+            {/* Action Call / Closure Section */}
+            <section className="lp-section border-top bg-subtle">
+                <div className="lp-cta-block">
+                    <h2 className="cta-heading">Your transactional store,<br />finally <span className="font-serif text-muted">conversational.</span></h2>
+                    <p className="cta-subheading">Connect cleanly via safe, standard connection configurations. No migrations required.</p>
+                    <button className="lp-btn-primary" onClick={handleEnter}>
+                        Boot Analytics Environment
+                        <ArrowRight size={14} strokeWidth={2.5} />
                     </button>
                 </div>
             </section>
 
-            <footer className="lp-footer">
-                <span className="lp-footer-name">TalkToYourDB</span>
-                <span className="lp-footer-info">FastAPI · PostgreSQL · GPT-4o</span>
+            {/* Structural Architectural Footer */}
+            <footer className="lp-footer border-top">
+                <div className="lp-footer-content">
+                    <span className="footer-brand">TalkToYourDB</span>
+                    <span className="footer-meta text-muted">Engine: FastAPI · Context Provider: OpenAI GPT-4o · Target Store: PostgreSQL</span>
+                </div>
             </footer>
         </div>
     );
