@@ -1399,104 +1399,115 @@ body {
 }
 
 /* ── HERO ── */
+
+/* The hero is a full-viewport section — the photo IS the section */
 .lp-hero {
   position: relative;
-  min-height: 100vh;
-  padding-top: 60px;
-  display: grid;
-  grid-template-columns: 1fr 440px;
-  align-items: center;
-  gap: 3rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  max-width: 1160px;
-  margin: 0 auto;
-  overflow: visible;
-}
-
-@media(max-width:1000px) {
-  .lp-hero {
-    grid-template-columns: 1fr;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-}
-
-/* photo covers the full viewport behind the grid */
-.lp-hero-photo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  z-index: -2;
-  background: url('/fella.png') center 35% / cover no-repeat;
+  min-height: 680px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+
+/* fella.png — fills the entire hero, slow parallax Ken Burns */
+.lp-hero-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('/fella.png') center 45% / cover no-repeat;
+  transform-origin: center center;
+  animation: hero-kenburns 22s ease-in-out infinite alternate;
   will-change: transform;
 }
 
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1.00) translateY(0px);
+  }
+
+  to {
+    transform: scale(1.07) translateY(-18px);
+  }
+}
+
+/* Veil: top is nearly transparent so sky reads through,
+   bottom goes very dark so the pipeline card and tree "sink in" */
 .lp-hero-veil-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
-  background: linear-gradient(to bottom,
-      rgba(245, 249, 255, .97) 0%,
-      rgba(245, 249, 255, .84) 25%,
-      rgba(240, 247, 255, .35) 52%,
-      rgba(10, 20, 45, .55) 78%,
-      rgba(10, 20, 45, .97) 100%);
+  background:
+    /* very light top wash — lets the blue sky breathe */
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, .12) 0%,
+      rgba(255, 255, 255, 0) 18%,
+      rgba(0, 0, 0, 0) 48%,
+      rgba(5, 12, 28, .62) 72%,
+      rgba(5, 12, 28, .96) 100%);
 }
 
 .lp-hero-veil-bottom {
   display: none;
 }
 
-/* dot grid */
+/* Subtle vignette on left/right edges */
 .lp-hero-grid {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 60vh;
-  z-index: -1;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
-  background-image: radial-gradient(rgba(46, 125, 209, .1) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 70%, transparent 100%);
+  background:
+    radial-gradient(ellipse 45% 100% at 0% 50%, rgba(5, 12, 28, .25) 0%, transparent 100%),
+    radial-gradient(ellipse 45% 100% at 100% 50%, rgba(5, 12, 28, .25) 0%, transparent 100%);
 }
 
+/* Hero inner layout: text top, pipeline card bottom-right */
 .lp-hero-body {
   position: relative;
   z-index: 10;
-  padding: 4rem 0 4rem;
+  width: 100%;
+  max-width: 1160px;
+  padding: 2.5rem 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media(max-width:640px) {
+  .lp-hero-body {
+    padding: 2rem 1.25rem 0;
+  }
 }
 
 .lp-hero-kicker {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, .82);
-  border: 1px solid rgba(46, 125, 209, .2);
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .35);
   border-radius: 99px;
   padding: 5px 16px;
   font-size: 12px;
   font-weight: 600;
-  color: #2E6EA0;
+  color: rgba(255, 255, 255, .9);
   margin-bottom: 1.25rem;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   animation: lp-up .65s ease .05s both;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .2);
 }
 
 .lp-kicker-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10B981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, .8);
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74, 222, 128, .9);
   animation: lp-glow 2s ease-in-out infinite;
 }
 
@@ -1519,17 +1530,20 @@ body {
   font-weight: 800;
   letter-spacing: -4px;
   line-height: 1.01;
-  color: #0D1520;
+  color: #fff;
+  /* drop shadow so it reads against both bright sky and dark clouds */
+  text-shadow: 0 2px 24px rgba(0, 0, 0, .18), 0 1px 4px rgba(0, 0, 0, .12);
   margin-bottom: 1.1rem;
   animation: lp-up .65s ease .12s both;
 }
 
 .lp-hero-sub {
   font-size: 17px;
-  color: #3a5070;
+  color: rgba(255, 255, 255, .82);
   line-height: 1.72;
   max-width: 500px;
   margin-bottom: 2rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .2);
   animation: lp-up .65s ease .2s both;
 }
 
@@ -1545,8 +1559,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  background: #0D1520;
-  color: #fff;
+  background: #fff;
+  color: #0D1520;
   border: none;
   border-radius: 10px;
   padding: .8rem 1.8rem;
@@ -1554,35 +1568,37 @@ body {
   font-weight: 700;
   font-family: var(--f);
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, .22);
-  transition: background .14s, transform .14s, box-shadow .14s;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, .22);
+  transition: background .14s, color .14s, transform .14s, box-shadow .14s;
 }
 
 .lp-cta-main:hover {
   background: #2E7DD1;
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(46, 125, 209, .4);
+  box-shadow: 0 8px 32px rgba(46, 125, 209, .5);
 }
 
 .lp-cta-ghost {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, .75);
-  color: #2a4060;
-  border: 1.5px solid rgba(46, 125, 209, .22);
+  background: rgba(255, 255, 255, .14);
+  color: rgba(255, 255, 255, .9);
+  border: 1.5px solid rgba(255, 255, 255, .35);
   border-radius: 10px;
   padding: .8rem 1.5rem;
   font-size: 15px;
   font-family: var(--f);
   cursor: pointer;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: background .14s, border-color .14s, transform .14s;
 }
 
 .lp-cta-ghost:hover {
-  background: rgba(255, 255, 255, .95);
-  border-color: rgba(46, 125, 209, .5);
+  background: rgba(255, 255, 255, .24);
+  border-color: rgba(255, 255, 255, .6);
   transform: translateY(-1px);
 }
 
@@ -1591,7 +1607,7 @@ body {
   gap: 1.25rem;
   flex-wrap: wrap;
   font-size: 12.5px;
-  color: #5a7090;
+  color: rgba(255, 255, 255, .65);
   font-weight: 500;
   animation: lp-up .65s ease .36s both;
 }
@@ -1603,17 +1619,27 @@ body {
 }
 
 .lp-hero-meta svg {
-  color: #2E7DD1;
+  color: rgba(255, 255, 255, .75);
 }
 
-/* ── PIPELINE FRAME ── */
+/* ── PIPELINE FRAME — floats at bottom-right over the photo ── */
 .lp-hero-pipeline {
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  bottom: 3.5rem;
+  right: 2.5rem;
+  z-index: 20;
+  width: 400px;
   animation: lp-up .8s cubic-bezier(.2, .8, .4, 1) .5s both;
 }
 
-@media(max-width:1000px) {
+@media(max-width:1100px) {
+  .lp-hero-pipeline {
+    right: 1.5rem;
+    width: 360px;
+  }
+}
+
+@media(max-width:900px) {
   .lp-hero-pipeline {
     display: none;
   }
@@ -1763,27 +1789,29 @@ body {
 /* scroll cue */
 .lp-scroll-cue {
   position: absolute;
-  bottom: 2rem;
+  bottom: 1.75rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
-  width: 36px;
-  height: 36px;
+  z-index: 20;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, .65);
-  border: 1px solid rgba(0, 0, 0, .1);
-  color: #6a8090;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .4);
+  color: rgba(255, 255, 255, .85);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   animation: lp-bob 2.5s ease-in-out infinite, lp-up .6s ease .9s both;
-  transition: background .14s;
+  transition: background .14s, border-color .14s;
 }
 
 .lp-scroll-cue:hover {
-  background: rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .3);
+  border-color: rgba(255, 255, 255, .6);
 }
 
 @keyframes lp-bob {

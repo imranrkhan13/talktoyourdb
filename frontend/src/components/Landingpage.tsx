@@ -230,33 +230,32 @@ export default function LandingPage({ onEnter }: Props) {
 
             {/* ══ HERO ══ */}
             <section className="lp-hero" ref={heroRef}>
-                {/* Parallax photo */}
+                {/* Full-bleed photo with Ken Burns — parallax on mouse */}
                 <div className="lp-hero-photo" style={parallaxStyle} />
-                {/* Layered veils */}
+                {/* Gradient veil: transparent top → dark bottom */}
                 <div className="lp-hero-veil-top" />
-                <div className="lp-hero-veil-bottom" />
-
-                {/* Floating grid */}
+                {/* Edge vignette */}
                 <div className="lp-hero-grid" />
 
+                {/* Text content — upper left, over bright sky */}
                 <div className="lp-hero-body">
-                    <div className="lp-hero-kicker" data-rv>
+                    <div className="lp-hero-kicker">
                         <span className="lp-kicker-dot" />
                         Production-grade AI · PostgreSQL · Schema-aware
                     </div>
 
-                    <h1 className="lp-hero-h1" data-rv>
+                    <h1 className="lp-hero-h1">
                         Talk to your<br />
                         database.
                     </h1>
 
-                    <p className="lp-hero-sub" data-rv>
+                    <p className="lp-hero-sub">
                         Not your SQL editor. TalkToYourDB is a production AI pipeline —
-                        schema-aware, multi-layer validated, self-healing. Built for engineers
-                        who need answers, not accidents.
+                        schema-aware, multi-layer validated, self-healing.
+                        Built for engineers who need answers, not accidents.
                     </p>
 
-                    <div className="lp-hero-actions" data-rv>
+                    <div className="lp-hero-actions">
                         <button className="lp-cta-main" onClick={go}>
                             Start querying <ArrowRight size={14} strokeWidth={2.5} />
                         </button>
@@ -265,7 +264,7 @@ export default function LandingPage({ onEnter }: Props) {
                         </button>
                     </div>
 
-                    <div className="lp-hero-meta" data-rv>
+                    <div className="lp-hero-meta">
                         <span><CheckCircle size={12} /> Read-only transactions</span>
                         <span><Shield size={12} /> 7-layer validation</span>
                         <span><RefreshCw size={12} /> Auto-repair AI</span>
@@ -273,8 +272,8 @@ export default function LandingPage({ onEnter }: Props) {
                     </div>
                 </div>
 
-                {/* Live pipeline on right */}
-                <div className="lp-hero-pipeline" data-rv>
+                {/* Pipeline card — floats bottom-right over the tree/clouds */}
+                <div className="lp-hero-pipeline">
                     <div className="lp-pipeline-frame">
                         <div className="lp-pipeline-header">
                             <span className="lpd r" /><span className="lpd y" /><span className="lpd g" />
