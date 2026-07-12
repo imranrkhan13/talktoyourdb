@@ -3,12 +3,16 @@ interface Props {
 }
 
 const EXAMPLES = [
-  'Show top 5 users by total order value last month',
-  'Which products are low on stock (less than 30 units)?',
-  'Count orders by status for the past 7 days',
-  'List users who placed more than 3 orders',
-  'What is the average order value per country?',
-  'Show daily revenue for the past 30 days',
+  'Who are our VIP customers?',
+  'What products should we restock first?',
+  'Which product category makes the most money?',
+  'Which customers are becoming inactive?',
+  'Show our biggest revenue opportunities',
+  'Which products are selling the fastest?',
+  'Where are most of our customers located?',
+  'What were our best sales days this month?',
+  'Which products are overstocked?',
+  'Show our top performing customers'
 ];
 
 export default function ExamplePrompts({ onSelect }: Props) {
