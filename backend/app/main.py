@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from app.services.history_service import history_service
 
 
-from backend.app.services import history_service
+from app.services import history_service
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
