@@ -20,6 +20,8 @@ class HistoryService:
 
     async def ensure_table(self) -> None:
         """Create the query_history table if it doesn't exist."""
+        if db_service._pool is None:
+            raise RuntimeError("Database pool was never initialized")
         async with db_service.pool.acquire() as conn:
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS query_history (

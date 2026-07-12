@@ -32,29 +32,24 @@ class DatabaseService:
 
     async def connect(self) -> None:
         import os
-
 async def connect(self) -> None:
-    print("=" * 80)
-    print("os.getenv(DATABASE_URL):", repr(os.getenv("DATABASE_URL")))
-    print("settings.DATABASE_URL :", repr(settings.DATABASE_URL))
-    print("All env keys containing DATABASE:")
-    for k, v in os.environ.items():
-        if "DATABASE" in k:
-            print(k, "=", repr(v))
-    print("=" * 80)
+    logger.info("DATABASE_URL=%r", settings.DATABASE_URL)
 
     try:
-            self._pool = await asyncpg.create_pool(
-                dsn=settings.DATABASE_URL,
-                min_size=2,
-                max_size=settings.DB_POOL_SIZE,
-                max_inactive_connection_lifetime=300,
-                command_timeout=settings.QUERY_TIMEOUT_SECONDS,
-            )
-            logger.info("Database pool created successfully")
-    except Exception as e:
-            logger.error(f"Failed to create DB pool: {e}")
-            raise
+        self._pool = await asyncpg.create_pool(
+            dsn=settings.DATABASE_URL,
+            min_size=2,
+            max_size=settings.DB_POOL_SIZE,
+            max_inactive_connection_lifetime=300,
+            command_timeout=settings.QUERY_TIMEOUT_SECONDS,
+        )
+        logger.info("Database pool created successfully")
+        logger.info("Pool object = %r", self._pool)
+        logger.info("Has pool property = %s", hasattr(self, "pool"))
+
+    except Exception:
+        logger.exception("Failed to create DB pool")
+        raise
 
     async def disconnect(self) -> None:
         if self._pool:
