@@ -10,8 +10,6 @@ import asyncio
 import logging
 from datetime import date, datetime
 from decimal import Decimal
-import os
-import os
 from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpg
@@ -28,184 +26,241 @@ class DatabaseService:
     def __init__(self):
         self._pool: Optional[asyncpg.Pool] = None
 
-    # ── Lifecycle ──────────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
 
     async def connect(self) -> None:
-        import os
-async def connect(self) -> None:
-    logger.info("DATABASE_URL=%r", settings.DATABASE_URL)
+        """Create the asyncpg connection pool."""
 
-    try:
-        self._pool = await asyncpg.create_pool(
-            dsn=settings.DATABASE_URL,
-            min_size=2,
-            max_size=settings.DB_POOL_SIZE,
-            max_inactive_connection_lifetime=300,
-            command_timeout=settings.QUERY_TIMEOUT_SECONDS,
-        )
-        logger.info("Database pool created successfully")
-        logger.info("Pool object = %r", self._pool)
-        logger.info("Has pool property = %s", hasattr(self, "pool"))
+        logger.info("=" * 80)
+        logger.info("Connecting to PostgreSQL...")
+        logger.info("DATABASE_URL = %s", settings.DATABASE_URL)
+        logger.info("=" * 80)
 
-    except Exception:
-        logger.exception("Failed to create DB pool")
-        raise
+        try:
+            self._pool = await asyncpg.create_pool(
+                dsn=settings.DATABASE_URL,
+                min_size=2,
+                max_size=settings.DB_POOL_SIZE,
+                max_inactive_connection_lifetime=300,
+                command_timeout=settings.QUERY_TIMEOUT_SECONDS,
+            )
+
+            logger.info("✅ Database pool created successfully")
+
+        except Exception:
+            logger.exception("❌ Failed to create database pool")
+            raise
 
     async def disconnect(self) -> None:
+        """Close the connection pool."""
+
         if self._pool:
             await self._pool.close()
             logger.info("Database pool closed")
 
     @property
     def pool(self) -> asyncpg.Pool:
-        if not self._pool:
-            raise RuntimeError("Database pool not initialised. Call connect() first.")
+        if self._pool is None:
+            raise RuntimeError("Database pool was never initialized")
         return self._pool
 
-    # ── Schema introspection ───────────────────────────────────────────────────
+    # ------------------------------------------------------------------
+    # Schema Introspection
+    # ------------------------------------------------------------------
 
     async def get_schema(self) -> Dict[str, Any]:
         """
-        Returns a structured schema dict:
-        { table_name: { columns: [{name, type, nullable, is_pk}], foreign_keys: [...] } }
+        Returns
+
+        {
+            table_name: {
+                columns: [],
+                foreign_keys: []
+            }
+        }
         """
+
         async with self.pool.acquire() as conn:
-            # Columns
+
             columns_query = """
                 SELECT
                     c.table_name,
                     c.column_name,
                     c.data_type,
                     c.is_nullable,
-                    CASE WHEN pk.column_name IS NOT NULL THEN true ELSE false END AS is_primary_key
+                    CASE
+                        WHEN pk.column_name IS NOT NULL THEN TRUE
+                        ELSE FALSE
+                    END AS is_primary_key
                 FROM information_schema.columns c
                 LEFT JOIN (
-                    SELECT kcu.table_name, kcu.column_name
+                    SELECT
+                        kcu.table_name,
+                        kcu.column_name
                     FROM information_schema.table_constraints tc
                     JOIN information_schema.key_column_usage kcu
-                        ON tc.constraint_name = kcu.constraint_name
-                        AND tc.table_schema = kcu.table_schema
-                    WHERE tc.constraint_type = 'PRIMARY KEY'
-                      AND tc.table_schema = 'public'
-                ) pk ON c.table_name = pk.table_name AND c.column_name = pk.column_name
-                WHERE c.table_schema = 'public'
-                  AND c.table_name NOT LIKE 'pg_%'
-                ORDER BY c.table_name, c.ordinal_position;
+                      ON tc.constraint_name = kcu.constraint_name
+                     AND tc.table_schema = kcu.table_schema
+                    WHERE tc.constraint_type='PRIMARY KEY'
+                      AND tc.table_schema='public'
+                ) pk
+                  ON c.table_name=pk.table_name
+                 AND c.column_name=pk.column_name
+                WHERE c.table_schema='public'
+                ORDER BY c.table_name,c.ordinal_position;
             """
 
-            # Foreign keys
             fk_query = """
                 SELECT
                     kcu.table_name AS from_table,
                     kcu.column_name AS from_column,
                     ccu.table_name AS to_table,
                     ccu.column_name AS to_column
-                FROM information_schema.table_constraints AS tc
-                JOIN information_schema.key_column_usage AS kcu
-                    ON tc.constraint_name = kcu.constraint_name
-                    AND tc.table_schema = kcu.table_schema
-                JOIN information_schema.constraint_column_usage AS ccu
-                    ON ccu.constraint_name = tc.constraint_name
-                    AND ccu.table_schema = tc.table_schema
-                WHERE tc.constraint_type = 'FOREIGN KEY'
-                  AND tc.table_schema = 'public';
+                FROM information_schema.table_constraints tc
+                JOIN information_schema.key_column_usage kcu
+                    ON tc.constraint_name=kcu.constraint_name
+                   AND tc.table_schema=kcu.table_schema
+                JOIN information_schema.constraint_column_usage ccu
+                    ON tc.constraint_name=ccu.constraint_name
+                   AND tc.table_schema=ccu.table_schema
+                WHERE tc.constraint_type='FOREIGN KEY'
+                  AND tc.table_schema='public';
             """
 
             rows = await conn.fetch(columns_query)
             fk_rows = await conn.fetch(fk_query)
 
-            schema: Dict[str, Any] = {}
-            for row in rows:
-                t = row["table_name"]
-                if t not in schema:
-                    schema[t] = {"columns": [], "foreign_keys": []}
-                schema[t]["columns"].append(
+        schema: Dict[str, Any] = {}
+
+        for row in rows:
+
+            table = row["table_name"]
+
+            if table not in schema:
+                schema[table] = {
+                    "columns": [],
+                    "foreign_keys": [],
+                }
+
+            schema[table]["columns"].append(
+                {
+                    "name": row["column_name"],
+                    "type": row["data_type"],
+                    "nullable": row["is_nullable"] == "YES",
+                    "is_primary_key": row["is_primary_key"],
+                }
+            )
+
+        for fk in fk_rows:
+
+            table = fk["from_table"]
+
+            if table in schema:
+                schema[table]["foreign_keys"].append(
                     {
-                        "name": row["column_name"],
-                        "type": row["data_type"],
-                        "nullable": row["is_nullable"] == "YES",
-                        "is_primary_key": row["is_primary_key"],
+                        "from_column": fk["from_column"],
+                        "to_table": fk["to_table"],
+                        "to_column": fk["to_column"],
                     }
                 )
 
-            for fk in fk_rows:
-                t = fk["from_table"]
-                if t in schema:
-                    schema[t]["foreign_keys"].append(
-                        {
-                            "from_column": fk["from_column"],
-                            "to_table": fk["to_table"],
-                            "to_column": fk["to_column"],
-                        }
-                    )
+        return schema
 
-            return schema
-
-    # ── Query execution ────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
+    # Query Execution
+    # ------------------------------------------------------------------
 
     async def execute_query(
-        self, sql: str
+        self,
+        sql: str,
     ) -> Tuple[List[Dict[str, Any]], int, float]:
-        """
-        Execute a validated SELECT query.
-        Returns (rows, total_count, execution_time_ms).
-        Enforces timeout and row limit.
-        """
+
         async with self.pool.acquire() as conn:
-            start = asyncio.get_event_loop().time()
+
+            start = asyncio.get_running_loop().time()
 
             try:
-                # Wrap in a read-only transaction for extra safety
+
                 async with conn.transaction(readonly=True):
+
                     rows = await asyncio.wait_for(
                         conn.fetch(
-                            f"SELECT * FROM ({sql}) AS __q LIMIT {settings.MAX_RESULT_ROWS + 1}"
+                            f"""
+                            SELECT *
+                            FROM ({sql}) AS __q
+                            LIMIT {settings.MAX_RESULT_ROWS + 1}
+                            """
                         ),
                         timeout=settings.QUERY_TIMEOUT_SECONDS,
                     )
+
             except asyncio.TimeoutError:
                 raise QueryTimeoutError(
-                    f"Query exceeded {settings.QUERY_TIMEOUT_SECONDS}s timeout"
+                    f"Query exceeded {settings.QUERY_TIMEOUT_SECONDS} seconds"
                 )
 
-            elapsed = (asyncio.get_event_loop().time() - start) * 1000
-            truncated = len(rows) > settings.MAX_RESULT_ROWS
+            elapsed = (
+                asyncio.get_running_loop().time() - start
+            ) * 1000
+
             rows = rows[: settings.MAX_RESULT_ROWS]
 
-            serialized = [self._serialize_row(dict(r)) for r in rows]
-            return serialized, len(serialized), round(elapsed, 2)
+            serialized = [
+                self._serialize_row(dict(r))
+                for r in rows
+            ]
 
-    # ── Helpers ────────────────────────────────────────────────────────────────
+            return (
+                serialized,
+                len(serialized),
+                round(elapsed, 2),
+            )
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
 
     @staticmethod
-    def _serialize_row(row: Dict[str, Any]) -> Dict[str, Any]:
-        """Convert non-JSON-serializable types to strings."""
+    def _serialize_row(
+        row: Dict[str, Any],
+    ) -> Dict[str, Any]:
+
         result = {}
-        for k, v in row.items():
-            if isinstance(v, (datetime, date)):
-                result[k] = v.isoformat()
-            elif isinstance(v, Decimal):
-                result[k] = float(v)
-            elif isinstance(v, bytes):
-                result[k] = v.hex()
+
+        for key, value in row.items():
+
+            if isinstance(value, (datetime, date)):
+                result[key] = value.isoformat()
+
+            elif isinstance(value, Decimal):
+                result[key] = float(value)
+
+            elif isinstance(value, bytes):
+                result[key] = value.hex()
+
             else:
-                result[k] = v
+                result[key] = value
+
         return result
 
     async def health_check(self) -> bool:
+
         try:
             async with self.pool.acquire() as conn:
                 await conn.fetchval("SELECT 1")
             return True
+
         except Exception:
+            logger.exception("Health check failed")
             return False
 
 
-# ── Custom exceptions ──────────────────────────────────────────────────────────
-
 class QueryTimeoutError(Exception):
+    """Raised when a SQL query exceeds the configured timeout."""
+
     pass
 
 
-# ── Singleton ──────────────────────────────────────────────────────────────────
 db_service = DatabaseService()

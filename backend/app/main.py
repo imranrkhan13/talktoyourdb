@@ -26,11 +26,26 @@ logger = logging.getLogger(__name__)
 # ── Lifespan (startup / shutdown) ──────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting AI SQL Query Builder...")
+    print("=" * 80)
+    print("STARTUP")
+    print("=" * 80)
+
+    print("1")
     await db_service.connect()
+
+    print("2")
+    print(db_service)
+
+    print("3")
+    print(db_service._pool)
+
+    print("4")
     await history_service.ensure_table()
+
+    print("5")
+
     yield
-    logger.info("Shutting down...")
+
     await db_service.disconnect()
 
 
